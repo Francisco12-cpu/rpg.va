@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Conectar celular</title>
+<style>
+  :root { --bg: #0b1118; --panel: #121c26; --text: #f2f6fa; --muted: #9fb0c0; --accent: #00e5ff; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, sans-serif;
+         display: flex; align-items: center; justify-content: center; padding: 16px; }
+  main { width: min(820px, 100%); display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: center;
+         background: var(--panel); border-radius: 18px; padding: 24px; }
+  @media (max-width: 640px) { main { grid-template-columns: 1fr; } }
+  #qr { background: #fff; padding: 14px; border-radius: 12px; width: 300px; max-width: 100%; aspect-ratio: 1; }
+  #qr svg, #qr img { width: 100%; height: 100%; display: block; }
+  h1 { margin: 0 0 8px; font-size: 24px; }
+  .url { font: 600 20px ui-monospace, monospace; color: var(--accent); word-break: break-all; margin: 6px 0 14px; }
+  ol { padding-left: 20px; margin: 8px 0; } li { margin: 6px 0; }
+  .muted { color: var(--muted); font-size: 14px; }
+  a.btn { display: inline-block; margin-top: 10px; padding: 10px 16px; border-radius: 10px; background: var(--accent); color: #00222a;
+          font-weight: 600; text-decoration: none; }
+</style>
+</head>
+<body>
+<main>
+  <div id="qr" aria-label="QR Code do endereço para o celular"></div>
+  <div>
+    <h1>📱 Conectar o celular</h1>
+    <div>Aponte a câmera do celular para o QR Code, ou digite no Chrome:</div>
+    <div class="url" id="url"></div>
+    <ol>
+      <li>O celular precisa estar no <b>mesmo Wi-Fi</b> do computador (ou no roteador do celular).</li>
+      <li>Vai aparecer <b>"Sua conexão não é particular"</b>: toque em <b>Avançado → Continuar</b>. É normal: o certificado é deste computador.</li>
+      <li>Se não abrir, confira se o Windows bloqueou o Python no <b>firewall</b> (permitir em redes privadas).</li>
+    </ol>
+    <a class="btn" href="/">Abrir o RPG VA neste PC</a>
+    <p class="muted">Deixe a janela preta do servidor aberta enquanto estiver jogando.</p>
+  </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script>
+  const url = new URLSearchParams(location.search).get('url') || location.href.replace(/servidor\/conectar\.html.*$/, '');
+  document.getElementById('url').textContent = url;
+  try {
+    const qr = qrcode(0, 'M');
+    qr.addData(url);
+    qr.make();
+    document.getElementById('qr').innerHTML = qr.createSvgTag({ cellSize: 6, margin: 0, scalable: true });
+  } catch (e) {
+    document.getElementById('qr').textContent = 'QR indisponível — digite o endereço ao lado.';
+  }
+</script>
+</body>
+</html>

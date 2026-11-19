@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1118">
+<title>RPG VA</title>
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+} }
+</script>
+</head>
+<body>
+<canvas id="tela"></canvas>
+
+<!-- Tela inicial -->
+<section id="inicio">
+  <div class="cartao">
+    <h1>RPG VA <small id="versao"></small></h1>
+    <p class="sub">Óculos de realidade aumentada para a mesa de RPG.</p>
+    <button id="btCamera" class="grande">📷 Começar com a câmera</button>
+    <button id="btFoto" class="secundario">🖼 Testar com foto da mesa (PC)</button>
+    <label class="opcao"><input type="checkbox" id="opOculos"> 👓 Entrar direto no modo óculos</label>
+    <p id="erro" role="alert"></p>
+    <p class="dica">Fase 1: câmera atravessando o óculos + camada por cima.<br>Use o Chrome. A câmera só abre em <b>https</b>.</p>
+  </div>
+</section>
+
+<!-- Barra de botões (no óculos: toque na tela para mostrar) -->
+<nav id="barra" hidden>
+  <button id="btOculos" title="Modo óculos (O)">👓</button>
+  <button id="btAjustar" title="Ajustar o óculos (A)">🔧</button>
+  <button id="btTeste" title="Moldura de teste (T)">🎯</button>
+  <button id="btSair" title="Sair">✕</button>
+</nav>
+
+<!-- Ajustes do óculos -->
+<section id="ajustes" hidden>
+  <div class="cartao">
+    <h2>🔧 Ajustar o óculos</h2>
+    <div id="controles"></div>
+    <label class="opcao"><input type="checkbox" id="opCurva"> Corrigir a curvatura da lente</label>
+    <div class="linha">
+      <button id="btPadrao" class="secundario">Voltar ao padrão</button>
+      <button id="btFechar">Pronto</button>
+    </div>
+  </div>
+</section>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

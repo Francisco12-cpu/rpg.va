@@ -1,0 +1,4 @@
+servidor/cache/
+servidor/cert.pem
+servidor/key.pem
+__pycache__/
