@@ -5,16 +5,28 @@ a câmera traseira mostra a mesa de verdade e o app desenha coisas por cima.
 
 O plano completo está em [`docs/PLANO.md`](docs/PLANO.md).
 
-## Fase atual: 1 — base do óculos
+## O que já funciona
 
-- Câmera traseira em tela cheia.
-- **👓 Modo óculos:** tela dividida pros dois olhos, com correção da curvatura da lente
-  (reaproveitada do projeto *cacador-de-sinal*). Entra em tela cheia e deita a tela.
-- **Camada de desenho** com o mesmo tamanho da imagem da câmera: as próximas fases desenham
-  nela (grade, caminho, armadilhas) e o desenho fica grudado no lugar certo da imagem.
-- **HUD dentro da imagem** (aparece nos dois olhos): FPS e avisos.
-- **🎯 Moldura de teste:** cantos, cruz no centro e pontinhos. Serve para conferir o alinhamento.
-- **🔧 Ajustar:** distância entre as imagens, altura, tamanho e curvatura. Fica salvo no celular.
+**Fase 1 — base do óculos**
+- Câmera traseira em tela cheia; **👓 modo óculos** com tela dividida e correção da lente
+  (reaproveitada do *cacador-de-sinal*); **🔧 ajustes** salvos no celular.
+- Camada de desenho com o tamanho da imagem da câmera + HUD dentro da imagem.
+
+**Fase 2 — o óculos acha a grade do tabuleiro (sem QR Code)**
+- Acha as linhas roxas do tabuleiro, monta a perspectiva e numera as casas (u,v).
+- Só conta casas em cima do tabuleiro: fundo branco/cinza e linha escura nas bordas
+  (madeira, cadeiras e pastas ficam de fora).
+- Acompanha de um quadro para o outro, para a casa (0,0) continuar a mesma enquanto a cabeça mexe.
+- **▦** mostra/esconde a grade; **🎯** mostra também os números das casas e as retas achadas.
+
+**Modo Mestre — funciona direto pelo link do GitHub**
+- No óculos, toque em **🧙**: aparece um **código de 4 números**.
+- O Mestre abre **https://francisco12-cpu.github.io/rpg.va/mestre.html** (PC ou outro celular),
+  digita o código e vê **ao vivo** o que o jogador vê.
+- Do painel o Mestre manda **mensagens** que aparecem no óculos e liga/desliga a grade e os números.
+- A conexão usa PeerJS (WebRTC): um servidor público só apresenta os dois aparelhos, e o vídeo
+  vai direto de um para o outro. **Os dois precisam de internet**; no mesmo Wi-Fi funciona melhor.
+  Em redes muito diferentes (ex.: um no 4G e outro num Wi-Fi com firewall) pode não conectar.
 
 ## Como abrir
 
@@ -25,7 +37,7 @@ O plano completo está em [`docs/PLANO.md`](docs/PLANO.md).
 QR Code (mesmo Wi-Fi). No aviso "conexão não particular": **Avançado → Continuar**.
 
 **Teste no PC sem câmera:** botão *Testar com foto da mesa*, ou abra com `?foto` no fim do
-endereço (`?foto&oculos` já entra no modo óculos).
+endereço (`?foto&oculos` já entra no modo óculos; `?foto=assets/testes/4.jpg&debug` usa outra foto e liga a conferência).
 
 ## Usando
 
@@ -33,7 +45,10 @@ endereço (`?foto&oculos` já entra no modo óculos).
 |---|---|---|
 | 👓 | O | liga/desliga o modo óculos |
 | 🔧 | A | ajustar o óculos |
-| 🎯 | T | moldura de teste |
+| ▦ | G | mostrar a grade |
+| 🎯 | T | moldura de teste + números + retas achadas |
+| 🧙 | M | Modo Mestre (mostra o código) |
+| — | N | números das casas |
 | ✕ | Esc | volta para o início |
 
 No modo óculos os botões somem: **toque na tela** para eles voltarem por 4 segundos.
@@ -49,6 +64,11 @@ js/camada.js        camada de desenho (coordenadas da imagem da câmera)
 js/hud.js           painel de informações dentro da imagem
 js/compositor.js    junta câmera + camada + HUD (+ 3D na Fase 4)
 js/saida.js         tela normal ou dois olhos com correção da lente
+js/grade.js         acha a grade do tabuleiro (Hough + homografia) e numera as casas
+js/matriz.js        contas da homografia
+js/sala.js          conexão óculos ⇄ Mestre (PeerJS)
+mestre.html         Painel do Mestre
+js/mestre.js        lógica do Painel do Mestre
 assets/             foto de teste da mesa
 servidor/           servidor HTTPS local (Python, só biblioteca padrão)
 docs/PLANO.md       plano em fases

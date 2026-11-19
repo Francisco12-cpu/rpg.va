@@ -1,0 +1,28 @@
+body.mestre { overflow: auto; background: radial-gradient(circle at 50% 0, #241640 0, var(--bg) 60%) fixed; }
+body.mestre header { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 14px 16px; max-width: 900px; margin: 0 auto; }
+body.mestre h1 { font-size: 22px; }
+body.mestre main { max-width: 900px; margin: 0 auto; padding: 0 16px 32px; }
+body.mestre .cartao { margin: 24px auto; }
+.selo { font-size: 13px; padding: 4px 10px; border-radius: 99px; background: #263445; color: var(--fraco); white-space: nowrap; }
+.selo.ok { background: #1f5f3a; color: #c9ffdc; }
+.selo.erro { background: #5f1f2a; color: #ffd0d6; }
+
+#form { display: flex; gap: 10px; margin-top: 12px; }
+#codigo { flex: 1; min-width: 0; font: 700 32px ui-monospace, monospace; letter-spacing: 10px; text-align: center;
+  padding: 10px; border-radius: 12px; border: 2px solid #263445; background: #0b1118; color: var(--texto); }
+#codigo:focus { outline: none; border-color: var(--destaque); }
+
+.tela { position: relative; background: #000; border-radius: 14px; overflow: hidden; aspect-ratio: 16 / 9; }
+.tela video { width: 100%; height: 100%; object-fit: contain; display: block; }
+#semVideo { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--fraco); }
+.info { margin: 10px 2px; color: var(--fraco); font-size: 14px; }
+
+.grupo { background: var(--painel); border-radius: 14px; padding: 14px; margin-top: 12px; }
+.grupo h3 { margin: 0 0 10px; font-size: 15px; color: var(--fraco); font-weight: 600; }
+.botoes { display: flex; flex-wrap: wrap; gap: 8px; }
+.botoes button { background: #263445; color: var(--texto); }
+.botoes button.ligado { background: var(--destaque); color: var(--destaque-escuro); }
+.linha input { flex: 1; min-width: 0; font: inherit; padding: 12px; border-radius: 12px; border: 2px solid #263445;
+  background: #0b1118; color: var(--texto); }
+#btDesconectar { margin-top: 16px; }

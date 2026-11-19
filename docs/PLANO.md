@@ -22,11 +22,11 @@ que **só quem está de óculos vê**.
 | # | Fase | Situação |
 |---|---|---|
 | 1 | **Base do óculos**: câmera em tela cheia, tela dividida pros dois olhos com correção da lente, camada de desenho por cima, HUD dentro da imagem | ✅ feito |
-| 2 | **Ler o tabuleiro**: achar a grade roxa e saber em qual casa cada ponto da imagem está | próxima |
-| 3 | **Caminho + linhas-armadilha**: o app sorteia um caminho e linhas tipo laser em cima da grade; acha os bonecos pela massinha cinza e dispara se um boneco cruzar a linha | |
-| 4 | **Dados → monstros 3D**: dado no tabuleiro vira um modelinho em cima dele; o monstro depende da cor (e do número no d6); tapou/tirou o dado, o monstro some; dado branco tem regra especial | |
+| 2 | **Ler o tabuleiro**: achar a grade roxa e saber em qual casa cada ponto da imagem está | ✅ feito (acerta em 4 de 5 fotos de teste) |
+| 3 | **Caminho + linhas-armadilha** (próxima): o app sorteia um caminho e linhas tipo laser em cima da grade; acha os bonecos pela massinha cinza e dispara se um boneco cruzar a linha | |
+| 4 | **Dados → monstros 3D**: dado no tabuleiro vira um modelinho em cima dele; o monstro depende do **tipo** (d4 = triângulo, d6 = quadrado, outros = redondo, pelo contorno) e da **cor**; tapou/tirou o dado, o monstro some; dado branco tem regra especial | |
 | 5 | **Medalhão → Mago Louco** | |
-| 6 | **Painel do Mestre**: câmera do jogador ao vivo, sortear de novo, ligar/desligar, editar a tabela dado→monstro, chamar o Mago | |
+| 6 | **Painel do Mestre**: câmera do jogador ao vivo, sortear de novo, ligar/desligar, editar a tabela dado→monstro, chamar o Mago | 🟡 base pronta: conecta pelo GitHub Pages (PeerJS), vídeo ao vivo, mensagens, ligar/desligar grade e números |
 | 7 | Publicar e testar na mesa | contínuo |
 
 ## Limites conhecidos
@@ -37,5 +37,5 @@ que **só quem está de óculos vê**.
 
 ## Dúvidas em aberto
 
-- "Dado T3": é o dado mostrando **3** ou um **tipo** de dado?
+- ~~"Dado T3"~~ → é o **d4** (tipo de dado).
 - Regra do **dado branco**: monstro mais forte, chefe ou inverte algo?

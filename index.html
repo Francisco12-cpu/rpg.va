@@ -24,7 +24,7 @@
     <button id="btFoto" class="secundario">🖼 Testar com foto da mesa (PC)</button>
     <label class="opcao"><input type="checkbox" id="opOculos"> 👓 Entrar direto no modo óculos</label>
     <p id="erro" role="alert"></p>
-    <p class="dica">Fase 1: câmera atravessando o óculos + camada por cima.<br>Use o Chrome. A câmera só abre em <b>https</b>.</p>
+    <p class="dica">Fase 2: o óculos acha a grade do tabuleiro sozinho.<br>Use o Chrome. A câmera só abre em <b>https</b>.</p>
   </div>
 </section>
 
@@ -32,9 +32,26 @@
 <nav id="barra" hidden>
   <button id="btOculos" title="Modo óculos (O)">👓</button>
   <button id="btAjustar" title="Ajustar o óculos (A)">🔧</button>
-  <button id="btTeste" title="Moldura de teste (T)">🎯</button>
+  <button id="btGrade" title="Mostrar a grade (G)">▦</button>
+  <button id="btTeste" title="Moldura de teste + números das casas (T)">🎯</button>
+  <button id="btMestre" title="Modo Mestre (M)">🧙</button>
   <button id="btSair" title="Sair">✕</button>
 </nav>
+
+<!-- Sala do Modo Mestre -->
+<section id="painelSala" hidden>
+  <div class="cartao">
+    <h2>🧙 Modo Mestre</h2>
+    <p class="sub">O Mestre abre o link abaixo no PC ou em outro celular e digita o código. Ele vê o que você vê e manda coisas para o óculos.</p>
+    <div id="salaCodigo" class="codigo">----</div>
+    <p id="salaEstado"></p>
+    <a id="salaLink" class="link" target="_blank" rel="noopener"></a>
+    <div class="linha">
+      <button id="btDesligarSala" class="secundario">Desligar</button>
+      <button id="btFecharSala">Fechar</button>
+    </div>
+  </div>
+</section>
 
 <!-- Ajustes do óculos -->
 <section id="ajustes" hidden>

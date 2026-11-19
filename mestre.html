@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1118">
+<title>Painel do Mestre</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/mestre.css">
+</head>
+<body class="mestre">
+<header>
+  <h1>🧙 Painel do Mestre <small>RPG VA</small></h1>
+  <span id="estado" class="selo">desconectado</span>
+</header>
+
+<main>
+  <section id="entrar" class="cartao">
+    <h2>Conectar ao óculos</h2>
+    <p class="sub">No óculos, toque em <b>🧙</b> e digite aqui o código que aparecer.</p>
+    <form id="form">
+      <input id="codigo" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="0000" autocomplete="off" required>
+      <button type="submit">Conectar</button>
+    </form>
+    <p id="erro" role="alert"></p>
+    <p class="dica">Os dois aparelhos precisam de internet. No mesmo Wi-Fi funciona melhor.</p>
+  </section>
+
+  <section id="painel" hidden>
+    <div class="tela">
+      <video id="video" playsinline autoplay muted></video>
+      <div id="semVideo">esperando a imagem do óculos…</div>
+    </div>
+
+    <div class="info" id="info">—</div>
+
+    <div class="grupo">
+      <h3>Mostrar no óculos</h3>
+      <div class="botoes">
+        <button class="alternar" data-chave="grade">▦ Grade</button>
+        <button class="alternar" data-chave="numeros">🔢 Números das casas</button>
+      </div>
+    </div>
+
+    <div class="grupo">
+      <h3>Mensagem para o jogador</h3>
+      <div class="botoes">
+        <button class="rapida">⚠ Cuidado!</button>
+        <button class="rapida">👁 Você sente algo estranho…</button>
+        <button class="rapida">🎲 Role um dado</button>
+        <button class="rapida">✨ Algo mágico está perto</button>
+      </div>
+      <form id="formMsg" class="linha">
+        <input id="msg" maxlength="60" placeholder="Escreva uma mensagem…" autocomplete="off">
+        <button type="submit">Enviar</button>
+      </form>
+    </div>
+
+    <p class="dica">Em breve aqui: sortear caminho e armadilhas, tabela dado → monstro, chamar o Mago Louco.</p>
+    <button id="btDesconectar" class="secundario">Desconectar</button>
+  </section>
+</main>
+
+<script type="module" src="js/mestre.js"></script>
+</body>
+</html>

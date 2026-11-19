@@ -1,12 +1,14 @@
-// RPG VA — Fase 1: a câmera atravessa o óculos e uma camada é desenhada por cima.
+// RPG VA — óculos de realidade aumentada para a mesa de RPG.
 import * as THREE from 'three';
 import { abrirCamera, abrirFoto, mensagemDeErro } from './fonte.js';
 import { Camada, desenharMolduraTeste } from './camada.js';
 import { Hud } from './hud.js';
 import { Compositor } from './compositor.js';
 import { Saida, ajustesPadrao, carregarAjustes, salvarAjustes } from './saida.js';
+import { LeitorGrade, desenharGrade } from './grade.js';
+import { SalaJogador } from './sala.js';
 
-const VERSAO = 'v0.1 · fase 1';
+const VERSAO = 'v0.3 · fase 2 + mestre';
 const $ = (id) => document.getElementById(id);
 $('versao').textContent = VERSAO;
 
@@ -20,14 +22,17 @@ const camada = new Camada();
 const hud = new Hud();
 const ajustes = carregarAjustes();
 let fonte = null, compositor = null, saida = null;
-let molduraTeste = true;
+let molduraTeste = false;
+let mostrarGrade = true;
+let mostrarNumeros = false;
+const grade = new LeitorGrade();
 let rodando = false;
 
 // ---------------------------------------------------------------- início
 async function iniciar(tipo) {
   $('erro').textContent = '';
   try {
-    fonte = tipo === 'camera' ? await abrirCamera() : await abrirFoto('assets/mesa-teste.jpg');
+    fonte = tipo === 'camera' ? await abrirCamera() : await abrirFoto(fotoTeste());
   } catch (e) {
     $('erro').textContent = mensagemDeErro(e);
     return;
@@ -45,6 +50,8 @@ async function iniciar(tipo) {
 
 function sair() {
   if (saida && saida.oculos) sairOculos();
+  sala.fechar();
+  $('painelSala').hidden = true;
   if (fonte) fonte.parar();
   fonte = null; compositor = null;
   $('barra').hidden = true;
@@ -65,11 +72,15 @@ function quadro(agora) {
   camada.ajustar(fonte.largura, fonte.altura);
   camada.limpar();
   if (molduraTeste) desenharMolduraTeste(camada, agora / 1000);
-  // Fases 2+ desenham aqui: grade do tabuleiro, caminho, linhas-armadilha...
+  grade.atualizar(fonte, agora);
+  if (mostrarGrade) desenharGrade(camada, grade, { numeros: mostrarNumeros || molduraTeste, retas: molduraTeste });
+  // Fases 3+ desenham aqui: caminho, linhas-armadilha, monstros...
   camada.pronto();
 
-  hud.atualizar({ status: fonte.tipo === 'camera' ? '📷 câmera' : '🖼 foto', fps: Math.round(fps) });
+  const status = grade.achou ? `▦ grade ok · ${grade.casas.length} casas` : '▦ procurando a grade…';
+  hud.atualizar({ status, fps: Math.round(fps) });
   saida.mostrar(compositor);
+  enviarParaMestre(agora);
 }
 
 // ---------------------------------------------------------------- óculos
@@ -97,7 +108,7 @@ let timerBarra = 0;
 function esconderBarraDepois() {
   clearTimeout(timerBarra);
   timerBarra = setTimeout(() => {
-    if (saida && saida.oculos && $('ajustes').hidden) $('barra').hidden = true;
+    if (saida && saida.oculos && $('ajustes').hidden && $('painelSala').hidden) $('barra').hidden = true;
   }, 4000);
 }
 // no óculos, tocar na tela (por fora) mostra os botões por 4 s
@@ -150,11 +161,83 @@ function abrirAjustes() {
   if (saida && !saida.oculos) entrarOculos(); // ajustar só faz sentido vendo os dois olhos
 }
 
+// ---------------------------------------------------------------- Modo Mestre
+// canvas pequeno com o que o jogador vê: vira o vídeo do Painel do Mestre
+const canvasVideo = document.createElement('canvas');
+canvasVideo.width = 640; canvasVideo.height = 360;
+const ctxVideo = canvasVideo.getContext('2d');
+let proximoVideo = 0, proximoEstado = 0;
+
+const sala = new SalaJogador({
+  canvasVideo,
+  aoMensagem: receberDoMestre,
+  aoMudar: atualizarSala,
+});
+
+function receberDoMestre(msg) {
+  if (!msg || typeof msg !== 'object') return;
+  if (msg.tipo === 'aviso' && typeof msg.texto === 'string') hud.aviso(msg.texto.slice(0, 60), 4000);
+  else if (msg.tipo === 'alternar') {
+    if (msg.chave === 'grade') mostrarGrade = !mostrarGrade;
+    else if (msg.chave === 'numeros') mostrarNumeros = !mostrarNumeros;
+    atualizarBotoes();
+    proximoEstado = 0;
+  }
+}
+
+function enviarParaMestre(agora) {
+  if (sala.estado !== 'conectado') return;
+  if (agora >= proximoVideo) {
+    proximoVideo = agora + 80;
+    const tela = $('tela');
+    const h = Math.round(640 * tela.height / tela.width) || 360;
+    if (canvasVideo.height !== h) canvasVideo.height = h;
+    ctxVideo.drawImage(tela, 0, 0, canvasVideo.width, canvasVideo.height);
+  }
+  if (agora >= proximoEstado) {
+    proximoEstado = agora + 1000;
+    sala.enviar({
+      tipo: 'estado', fps: Math.round(fps), fonte: fonte && fonte.tipo, oculos: !!(saida && saida.oculos),
+      grade: grade.achou, casas: grade.casas.length,
+      opcoes: { grade: mostrarGrade, numeros: mostrarNumeros },
+    });
+  }
+}
+
+function linkMestre() {
+  return new URL('mestre.html?codigo=' + sala.codigo, location.href).href;
+}
+
+function atualizarSala() {
+  const textos = {
+    desligada: 'desligado', abrindo: 'abrindo a sala…', esperando: 'esperando o Mestre conectar…',
+    conectado: '✔ Mestre conectado', erro: sala.erro,
+  };
+  $('salaCodigo').textContent = sala.codigo;
+  $('salaEstado').textContent = textos[sala.estado] || '';
+  $('salaEstado').className = sala.estado === 'conectado' ? 'ok' : sala.estado === 'erro' ? 'ruim' : '';
+  $('salaLink').textContent = linkMestre();
+  $('salaLink').href = linkMestre();
+  $('btMestre').classList.toggle('ligado', sala.aberta);
+  if (sala.estado === 'conectado') hud.aviso('🧙 Mestre conectado', 3000);
+  else if (sala.estado === 'esperando') hud.aviso(`🧙 Código do Mestre: ${sala.codigo}`, 8000);
+}
+
+function abrirSala() {
+  $('painelSala').hidden = false;
+  if (!sala.peer) sala.abrir();
+  atualizarSala();
+}
+$('btFecharSala').addEventListener('click', () => { $('painelSala').hidden = true; if (saida && saida.oculos) esconderBarraDepois(); });
+$('btDesligarSala').addEventListener('click', () => { sala.fechar(); $('painelSala').hidden = true; });
+
 // ---------------------------------------------------------------- botões e teclado
 function atualizarBotoes() {
   $('btOculos').classList.toggle('ligado', !!(saida && saida.oculos));
   $('btTeste').classList.toggle('ligado', molduraTeste);
+  $('btGrade').classList.toggle('ligado', mostrarGrade);
 }
+function alternarGrade() { mostrarGrade = !mostrarGrade; atualizarBotoes(); }
 function alternarOculos() { if (!saida) return; if (saida.oculos) sairOculos(); else entrarOculos(); }
 function alternarTeste() { molduraTeste = !molduraTeste; atualizarBotoes(); }
 
@@ -163,21 +246,29 @@ $('btFoto').addEventListener('click', () => iniciar('foto'));
 $('btOculos').addEventListener('click', alternarOculos);
 $('btAjustar').addEventListener('click', abrirAjustes);
 $('btTeste').addEventListener('click', alternarTeste);
+$('btGrade').addEventListener('click', alternarGrade);
+$('btMestre').addEventListener('click', abrirSala);
 $('btSair').addEventListener('click', sair);
 document.addEventListener('fullscreenchange', () => {
   // saiu da tela cheia pelo botão "voltar" do celular → sai do óculos também
   if (!document.fullscreenElement && saida && saida.oculos && $('ajustes').hidden) sairOculos();
 });
-// atalhos de teste: ?foto abre direto com a foto; ?oculos já entra no óculos
+// atalhos de teste: ?foto abre direto com a foto (?foto=assets/testes/2.jpg escolhe outra);
+// ?oculos já entra no óculos
 const params = new URLSearchParams(location.search);
+function fotoTeste() { return params.get('foto') || 'assets/mesa-teste.jpg'; }
 if (params.has('oculos')) $('opOculos').checked = true;
-if (params.has('foto')) iniciar('foto');
+if (params.has('debug')) molduraTeste = true;
+if (params.has('foto')) iniciar('foto').then(() => { if (params.has('mestre')) abrirSala(); });
 
 window.addEventListener('keydown', (e) => {
   if (!compositor || e.target.tagName === 'INPUT') return;
   const k = e.key.toLowerCase();
   if (k === 'o') alternarOculos();
   else if (k === 't') alternarTeste();
+  else if (k === 'g') alternarGrade();
+  else if (k === 'm') abrirSala();
+  else if (k === 'n') { mostrarNumeros = !mostrarNumeros; }
   else if (k === 'a') { if ($('ajustes').hidden) abrirAjustes(); else $('ajustes').hidden = true; }
   else if (k === 'escape') { if (!$('ajustes').hidden) $('ajustes').hidden = true; else sair(); }
 });
